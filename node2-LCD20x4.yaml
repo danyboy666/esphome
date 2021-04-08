@@ -1,0 +1,140 @@
+esphome:
+  name: node2lcd
+  platform: ESP8266
+  board: nodemcuv2
+#  includes: 
+#    - wire_routine.h
+#  libraries:
+#    - "Adafruit Wire Library"
+wifi:
+  ssid: !secret wifi-ssid
+  password: !secret wifi-password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Node2-Lcd20X4 Fallback Hotspot"
+    password: "JrcQDZ05J00Y"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret esphome-password
+
+ota:
+  password: !secret ota-password
+
+dallas:
+  - pin: D10
+  
+i2c:
+  sda: D2
+  scl: D1
+  scan: False
+
+pcf8574:
+  - id: 'pcf8574_hub'
+    address: 0x20
+    pcf8575: False
+
+display:
+  - platform: lcd_gpio
+    dimensions: 20x4
+    data_pins:
+      - D7
+      - D6
+      - D5
+      - D0
+    enable_pin: D3
+    rs_pin: D4
+    id: my_display
+    lambda: |-
+      it.printf(0, 0, "Temp: %.1f°C", id(my_dallas).state);
+
+keypad:
+  id: mykeypad
+  rows:
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 0
+        mode: OUTPUT
+        inverted: False
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 1
+        mode: OUTPUT
+        inverted: False        
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 2
+        mode: OUTPUT
+        inverted: False
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 3
+        mode: OUTPUT
+        inverted: False
+  columns:
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 4
+        mode: INPUT
+        inverted: False
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 5
+        mode: INPUT
+        inverted: False
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 6
+        mode: INPUT
+        inverted: False
+    - pin:
+        pcf8574: pcf8574_hub
+        number: 7
+        mode: INPUT
+        inverted: False
+  keys: "123A456B789C*0#D"
+
+binary_sensor:
+  - platform: keypad
+    keypad_id: mykeypad
+    id: key4
+    row: 1
+    col: 0
+  - platform: keypad
+    id: keyA
+    key: A
+
+text_sensor:
+  - platform: keypad
+    id: reader
+    keypad_id: mykeypad
+    max_length: 4
+    end_keys: "#"
+    back_keys: "*"
+    allowed_keys: "0123456789"
+    on_progress:
+      - logger.log: 
+          format: "input progress: '%s'"
+          args: [ 'x.c_str()' ]
+    on_value:
+      - logger.log: 
+          format: "input result: '%s'"
+          args: [ 'x.c_str()' ]
+
+sensor:
+  - platform: dallas
+    address: 0x533C01D0755ACE28
+    id: my_dallas
+    name: "Panel Temperature"
+    unit_of_measurement: "°C"
+    icon: "mdi:thermometer"
+
+time:
+- platform: sntp
+  id: my_time            
