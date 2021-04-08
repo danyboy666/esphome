@@ -12,7 +12,7 @@ Thanks to https://github.com/ssieb/custom_components/issues/11#issuecomment-8152
 
 Relevant lines:
 
-i2c:
+```i2c:
   sda: D2
   scl: D1
   scan: False
@@ -66,7 +66,8 @@ keypad:
         number: 7
         mode: INPUT
         inverted: False
-  keys: "123A456B789C*0#D"
+  keys: "123A456B789C*0#D"```
+
 
 logs:
 
