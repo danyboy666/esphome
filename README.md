@@ -6,7 +6,7 @@ The yaml is a working base setup for an LCD display interfaced with a matrix key
 
 Use with https://github.com/ssieb/custom_components/tree/master/keypad
 
-Install componant in /cconfig/esphome/custom_componant/keypad
+Install componant in /config/esphome/custom_componant/keypad
 
 Thanks to https://github.com/ssieb/custom_components/issues/11#issuecomment-815260903 i ws able to put a working setup together
 
